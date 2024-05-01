@@ -23,22 +23,26 @@ public class DatabaseConnector {
         }
     }
 
-    public static boolean authenticateMember(String email, String password) {
-        String sql = "SELECT * FROM Members WHERE Email = ? AND Password = ?";
+       public static int authenticateMember(Connection conn, String email, String password) {
+    String sql = "SELECT UserID FROM Members WHERE Email = ? AND Password = ?";
+    
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setString(1, email);
+        stmt.setString(2, password);
         
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, email);
-            stmt.setString(2, password);
-            
-            try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next();
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("UserID"); // Return user ID if authentication succeeds
+            } else {
+                return -1; // Return -1 if authentication fails
             }
-        } catch (SQLException ex) {
-            System.out.println("Error authenticating member: " + ex.getMessage());
-            return false;
         }
+    } catch (SQLException ex) {
+        System.out.println("Error authenticating member: " + ex.getMessage());
+        return -1; // Return -1 if an error occurs
     }
+}
+
 
      public static Connection getConnection() throws SQLException {
         String host = "localhost";
