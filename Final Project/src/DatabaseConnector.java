@@ -19,9 +19,9 @@ public class DatabaseConnector {
             
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt(1); // Return user ID if authentication succeeds
+                    return rs.getInt(1); 
                 } else {
-                    return -1; // Return -1 if authentication fails
+                    return -1; 
                 }
             }
         } catch (SQLException ex) {
